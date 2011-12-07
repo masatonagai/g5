@@ -4,31 +4,34 @@ import java.util.Map
 
 class SlideBuilder implements GroovyInterceptable {
 
-    LinkedList contexts = new LinkedList()
-    SlideDelegate delegate = new SlideDelegate(contexts)
+    SlideProxy proxy = new SlideProxy()
     
     def invokeMethod(String name, args) {
-        Map context = contexts ? new HashMap(contexts.last()) : new HashMap()
+		def closure = null
+		def attributes = null
+		def value = null
         args.each { arg -> 
             switch (arg) { 
-                case Closure:
-                    arg.delegate = this 
-                    context.put('closure', arg)
-                    break
-                case Map:
-                    context.putAll(arg)
-                    break
-                default:
-                    context.put('value', arg)
+                case Closure: closure = arg; break
+                case Map: attributes = arg; break
+                default: value = arg
             }
         }
-        contexts.add(context)
-        def metaMethod = delegate.metaClass.getMetaMethod(name, null) 
-        if (!metaMethod) {
-            System.out.println("$name($delegateArgs) is not found.")    
+	
+		def parentNode = proxy.node	
+		proxy.node = new Node(parentNode, name, attributes, value)
+		if (null != closure) {
+			closure.delegate = this
+		}
+		proxy.closure = closure
+	
+        def metaMethod = proxy.metaClass.getMetaMethod(name, null) 
+        if (null == metaMethod) {
+			throw new MissingMethodException(name, proxy.class, new Object[0], false) 
         } else {
-            metaMethod.invoke(delegate, null)
+            metaMethod.invoke(proxy, null)
         }
-        contexts.removeLast()
+		
+		proxy.node = parentNode
     }
 }
