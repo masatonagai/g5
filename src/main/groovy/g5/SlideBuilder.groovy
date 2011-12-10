@@ -3,12 +3,12 @@ package g5
 import java.util.Map
 
 class SlideBuilder implements GroovyInterceptable {
-
-    SlideProxy proxy = new SlideProxy()
+    private static Closure DO_NOTHING = {} 
+    private SlideProxy proxy = new SlideProxy()
     
     def invokeMethod(String name, args) {
-		def closure = null
-		def attributes = null
+		def closure = DO_NOTHING
+		def attributes = Collections.emptyMap()
 		def value = null
         args.each { arg -> 
             switch (arg) { 
