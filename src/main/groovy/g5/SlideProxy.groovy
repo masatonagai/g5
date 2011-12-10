@@ -12,8 +12,12 @@ import org.apache.fop.apps.MimeConstants
 class SlideProxy {
     
     private MarkupBuilder xslBuilder
-	Node node
-	Closure closure
+	private Node node
+	private Closure closure
+    
+    private resource(String name) {
+        this.class.classLoader.getResource(name)
+    }
 	
     def presentation() {
         def xsl = new File('test.xsl')
@@ -48,6 +52,7 @@ class SlideProxy {
                 }
         new File('test.pdf').withOutputStream { out ->
             def fopFactory = FopFactory.newInstance()
+            fopFactory.setUserConfig(new File(resource("fop.xconf").toURI()))
             def foUA = fopFactory.newFOUserAgent()
             def fop = fopFactory.newFop(
                     MimeConstants.MIME_PDF, foUA, out)
