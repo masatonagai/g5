@@ -13,20 +13,20 @@ import org.apache.fop.apps.MimeConstants
 class SlideProxy {
     
     private MarkupBuilder xslBuilder
-	private Node node
-	private Closure closure
+    private Node node
+    private Closure closure
     
     private resource(String name) {
         this.class.classLoader.getResource(name)
     }
-	
-    def presentation() {
+    
+    def slides() {
         def xsl = new File('test.xsl')
         xslBuilder = new MarkupBuilder(xsl.newWriter())
         xslBuilder.mkp.xmlDeclaration(
-			version: '1.0', 
-			encoding: node.attribute('encoding') ?: 'utf-8'
-		)
+            version: '1.0', 
+            encoding: node.attribute('encoding') ?: 'utf-8'
+        )
         xslBuilder.'xsl:stylesheet'(
                 version: '1.0',
                 'xmlns:xsl': "http://www.w3.org/1999/XSL/Transform",
