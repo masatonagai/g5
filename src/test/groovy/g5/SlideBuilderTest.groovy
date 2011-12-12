@@ -37,6 +37,7 @@ class SlideBuilderTest {
                     }
                 }    
             } 
+        slides.show() 
     }
 
 }

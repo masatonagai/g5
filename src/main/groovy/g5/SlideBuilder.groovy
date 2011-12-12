@@ -28,19 +28,20 @@ class SlideBuilder implements GroovyInterceptable {
         }
     
         def parentNode = proxy.node    
-        proxy.node = new Node(parentNode, name, attributes, value)
-        if (null != closure) {
-            closure.delegate = this
-        }
-        proxy.closure = closure
-    
-        def metaMethod = proxy.metaClass.getMetaMethod(name, null) 
-        if (null == metaMethod) {
-            throw new MissingMethodException(name, proxy.class, new Object[0], false) 
-        } else {
-            metaMethod.invoke(proxy, null)
-        }
+        try {
+            proxy.node = new Node(parentNode, name, attributes, value)
+            if (null != closure) {
+                closure.delegate = this
+            }
+            proxy.closure = closure
         
-        proxy.node = parentNode
+            def metaMethod = proxy.metaClass.getMetaMethod(name, null) 
+            if (null == metaMethod) {
+                throw new MissingMethodException(name, proxy.class, new Object[0], false) 
+            }
+            return metaMethod.invoke(proxy, null)
+        } finally { 
+            proxy.node = parentNode
+        }
     }
 }
