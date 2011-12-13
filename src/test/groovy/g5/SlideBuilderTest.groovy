@@ -4,8 +4,7 @@ import org.junit.Test
 
 class SlideBuilderTest {
   
-    @Test
-    void sample() {
+    static void main(String[] args) {
         def slideBuilder = new SlideBuilder()
         
         // custom object
@@ -13,7 +12,7 @@ class SlideBuilderTest {
             slideBuilder.block 'font-size':'36pt', 'margin-bottom':'18pt', it
         }
         
-        def slides = slideBuilder.slides 'font-family':'Verdana', 
+        def slides = slideBuilder 'font-family':'Verdana', 
                 'font-size':'24pt', {
                 slide 'text-align':'center', {
                     h1 { 
@@ -23,21 +22,24 @@ class SlideBuilderTest {
                     block "Nagai Masato"
                     block 'font-size':'16pt', color:'gray', "@nagai_masato"
                 }
-                // use shortcuts
-                sl {
+                slide {
                     h1 "What is G5?"
-                    ls {
-                        li { b "Groovy Slideshow System" }
-                        li { b "Uses XSL-FO"
-                            ls label:'-', { 
-                                li { b "Supports many output formats" }
-                                li { b "You can choose your favorite formatter" }
+                    list {
+                        listItem { block { 
+							image 'http://groovy.codehaus.org/images/groovy-logo-medium.png' 
+							inline "Slideshow System" 
+                        } }
+                        listItem { block "Uses XSL-FO"
+                            list label:'-', { 
+                                listItem { b "Supports many output formats" }
+                                listItem { b "You can choose your favorite formatter" }
                             }
                         }
                     }
                 }    
             } 
         slides.show() 
+//		slides.save('application/pdf', 'test.pdf')
     }
 
 }

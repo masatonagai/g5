@@ -25,7 +25,7 @@ class Slide {
    
     def save(String mime, String filename) {
         new File(filename).withOutputStream { out ->
-            output(mime, xsl)
+            output(mime, out)
         }   
     } 
     

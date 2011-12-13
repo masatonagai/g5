@@ -10,7 +10,7 @@ class SlideProxy {
     private Node node
     private Closure closure
     
-    def slides() {
+    def call() {
         def xsl = new File('.g5.tmp')
         xslBuilder = new MarkupBuilder(xsl.newWriter())
         xslBuilder.mkp.xmlDeclaration(
@@ -75,11 +75,16 @@ class SlideProxy {
     }
    
     def list() {
-        def attr = new HashMap(node.attributes())
-        attr.remove('label')
-        xslBuilder.'fo:list-block'(attr){
+        def attrs = new HashMap(node.attributes())
+        attrs.remove('label')
+        xslBuilder.'fo:list-block'(attrs){
             closure()
         }
     }
+	
+	def image() {
+		def attrs = node.attributes() + [src:"url(${node.value()})"]
+		xslBuilder.'fo:external-graphic'(attrs)	
+	}
 
 }
