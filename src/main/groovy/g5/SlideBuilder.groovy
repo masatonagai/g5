@@ -7,7 +7,7 @@ class SlideBuilder implements GroovyInterceptable {
     private SlideProxy proxy = new SlideProxy()
     
     private Map alias = [
-        sl: 'slide',
+        s: 'slide',
         ls: 'list',
         li: 'listItem',
         b: 'block',

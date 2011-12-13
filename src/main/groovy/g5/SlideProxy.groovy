@@ -23,7 +23,8 @@ class SlideProxy {
             'xmlns:fo': "http://www.w3.org/1999/XSL/Format") {
                 'xsl:output'(method: 'xml', indent: 'yes')
                 'xsl:template'(match: '/') {
-                    'fo:root' node.attributes(), {
+                    def defaultRootAttrs = ['font-size':'32pt']
+                    'fo:root' defaultRootAttrs + node.attributes(), {
                         'fo:layout-master-set' {
                             'fo:simple-page-master' 'master-name': 'slide',
                                 'page-height': '29.7cm',
@@ -81,10 +82,10 @@ class SlideProxy {
             closure()
         }
     }
-	
-	def image() {
-		def attrs = node.attributes() + [src:"url(${node.value()})"]
-		xslBuilder.'fo:external-graphic'(attrs)	
-	}
+    
+    def image() {
+        def attrs = node.attributes() + [src:"url(${node.value()})"]
+        xslBuilder.'fo:external-graphic'(attrs)    
+    }
 
 }

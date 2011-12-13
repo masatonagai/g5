@@ -19,11 +19,19 @@ class Slide {
         this.class.classLoader.getResource(name)
     }
     
+    def call() {
+        show()    
+    }
+    
+    def call(String mime, String filename) {
+        export(mime, filename)    
+    }
+    
     def show() {
         output(MimeConstants.MIME_FOP_AWT_PREVIEW)            
     }
    
-    def save(String mime, String filename) {
+    def export(String mime, String filename) {
         new File(filename).withOutputStream { out ->
             output(mime, out)
         }   
