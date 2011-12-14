@@ -98,6 +98,42 @@ class SlideProxy {
         }
     }
     
+    def table() {
+        xslBuilder.'fo:table' node.attributes() + ['table-layout':'fixed', width:'100%'], {
+            closure()
+        }    
+    }
+    
+    def tableColumn() {
+        xslBuilder.'fo:table-column' node.attributes() 
+    }
+    
+    def tableHeader() {
+        xslBuilder.'fo:table-header' node.attributes(), {
+            closure()    
+        }    
+    }
+   
+    def tableBody() {
+        xslBuilder.'fo:table-body' node.attributes(), {
+            closure()    
+        }    
+    } 
+    
+    def tableRow() {
+        xslBuilder.'fo:table-row' node.attributes(), {
+            closure()    
+        }   
+    }
+    
+    def tableCell() {
+        xslBuilder.'fo:table-cell' node.attributes(), {
+            'fo:block' node.value(), {
+                closure()    
+            }
+        }
+    }
+    
     def image() {
         def attrs = node.attributes() + [src:"url(${node.value()})"]
         xslBuilder.'fo:external-graphic'(attrs)    
