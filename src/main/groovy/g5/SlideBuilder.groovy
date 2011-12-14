@@ -32,6 +32,7 @@ class SlideBuilder implements GroovyInterceptable {
         li: 'listItem',
         b: 'block',
         i: 'inline',
+        im: 'image',
     ]
     
     def invokeMethod(String name, args) {

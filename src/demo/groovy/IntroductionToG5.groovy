@@ -18,15 +18,16 @@ import g5.SlideBuilder
 
 def slideBuilder = new SlideBuilder()
 
-def groovyColor = '#3483A1'
+def name = { 
+    def attrs = [color:'#3283A1']
+    slideBuilder.inline(it ? attrs + it : attrs, "G5") 
+}
 def title = { slideBuilder.block 'font-size':'48pt', 'margin-bottom':'18pt', it }
+def properNoun = { slideBuilder.inline 'font-style':'italic', "\"$it\"" }
 
 def slides = slideBuilder 'font-family':'Verdana', {
     slide {
-        title { 
-            inline "Introduction to "
-            inline 'font-size':'64pt', color:groovyColor, "G5" 
-        }
+        title { inline "Introduction to "; name('font-size':'64pt') }
         block "Nagai Masato" 
         block 'font-size':'16pt', color:'gray', {
             block "Twitter: @nagai_masato"
@@ -34,14 +35,19 @@ def slides = slideBuilder 'font-family':'Verdana', {
         }
     }
     slide {
-        title "What is G5?"
-        list {
+        title { inline "What is "; name(); inline "?" }
+        list 'font-size':'24pt', {
             listItem { 
                 image 'http://groovy.codehaus.org/images/groovy-logo-medium.png' 
                 inline "Slideshow System" 
             }
-            listItem "Allows you to create and show slides using Groovy"
-            listItem "Uses XSL-FO and Apache FOP for formatting slides"
+            listItem {
+                inline "Allows you to create and show slides using "; properNoun "Groovy"
+            }
+            listItem {
+                inline "Uses "; properNoun "XSL-FO"; inline " and "
+                properNoun "Apache FOP"; inline " for formatting slides"
+            }
         }
     }    
 } 
