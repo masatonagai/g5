@@ -26,36 +26,40 @@ class SlideProxy {
     private Closure closure
     
     def call() {
-        def xsl = new File('.g5.tmp')
-        xslBuilder = new MarkupBuilder(xsl.newWriter())
-        xslBuilder.mkp.xmlDeclaration(
-            version: '1.0', 
-            encoding: node.attribute('encoding') ?: 'utf-8'
-        )
-        xslBuilder.'xsl:stylesheet'(
-            version: '1.0',
-            'xmlns:xsl': "http://www.w3.org/1999/XSL/Transform",
-            'xmlns:fo': "http://www.w3.org/1999/XSL/Format") {
-                'xsl:output'(method: 'xml', indent: 'yes')
-                'xsl:template'(match: '/') {
-                    def defaultRootAttrs = ['font-size':'32pt']
-                    'fo:root' defaultRootAttrs + node.attributes(), {
-                        'fo:layout-master-set' {
-                            'fo:simple-page-master' 'master-name': 'slide',
-                                'page-height': '29.7cm',
-                                'page-width': '21.0cm',
-                                'margin': '2cm', {
-                                'fo:region-body'()
+        def xsl = File.createTempFile('.g5', '')
+        xsl.deleteOnExit()
+        
+        xsl.withWriter { w ->
+            xslBuilder = new MarkupBuilder(w)
+            xslBuilder.mkp.xmlDeclaration(
+                version: '1.0', 
+                encoding: node.attribute('encoding') ?: 'utf-8'
+            )
+            xslBuilder.'xsl:stylesheet'(
+                version: '1.0',
+                'xmlns:xsl': "http://www.w3.org/1999/XSL/Transform",
+                'xmlns:fo': "http://www.w3.org/1999/XSL/Format") {
+                    'xsl:output'(method: 'xml', indent: 'yes')
+                    'xsl:template'(match: '/') {
+                        def defaultRootAttrs = ['font-size':'32pt']
+                        'fo:root' defaultRootAttrs + node.attributes(), {
+                            'fo:layout-master-set' {
+                                'fo:simple-page-master' 'master-name': 'slide',
+                                    'page-height': '29.7cm',
+                                    'page-width': '21.0cm',
+                                    'margin': '2cm', {
+                                    'fo:region-body'()
+                                }
                             }
-                        }
-                        'fo:page-sequence'('master-reference': 'slide') {
-                            'fo:flow'('flow-name': 'xsl-region-body') {
-                                closure()    
+                            'fo:page-sequence'('master-reference': 'slide') {
+                                'fo:flow'('flow-name': 'xsl-region-body') {
+                                    closure()    
+                                }
                             }
                         }
                     }
                 }
-            }
+        }
         return new Slide(xsl)
     }
 

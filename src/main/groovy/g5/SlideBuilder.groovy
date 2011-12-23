@@ -22,7 +22,7 @@ import java.util.Map
  * 
  * @author Nagai Masato
  */
-class SlideBuilder implements GroovyInterceptable {
+class SlideBuilder {
     private static Closure DO_NOTHING = {} 
     private SlideProxy proxy = new SlideProxy()
     

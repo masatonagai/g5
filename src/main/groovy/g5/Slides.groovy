@@ -30,37 +30,39 @@ class Slide {
         this.xsl = xsl    
     }
     
-    private resource(String name) {
+    private URL resource(String name) {
         this.class.classLoader.getResource(name)
     }
     
-    def call() {
+    void call() {
         show()    
     }
     
-    def call(String mime, String filename) {
+    void call(String mime, String filename) {
         export(mime, filename)    
     }
     
-    def show() {
+    void show() {
         output(MimeConstants.MIME_FOP_AWT_PREVIEW)            
     }
-   
-    def export(String mime, String filename) {
+    
+    void export(String mime, String filename) {
         new File(filename).withOutputStream { out ->
             output(mime, out)
         }   
     } 
     
-    def output(String mime, OutputStream out = null) {
+    void output(String mime, OutputStream out = null) {
         def fopFactory = FopFactory.newInstance()
         fopFactory.setUserConfig(new File(resource("fop.xconf").toURI()))
         def foUA = fopFactory.newFOUserAgent()
         def fop = fopFactory.newFop(mime, foUA, out)
-        TransformerFactory.newInstance()
-            .newTransformer(new StreamSource(xsl.newReader()))
-            .transform(new StreamSource(new StringReader('<dummy/>')),
-            new SAXResult(fop.defaultHandler))
+        xsl.withReader { r ->
+            TransformerFactory.newInstance()
+                .newTransformer(new StreamSource(r))
+                .transform(new StreamSource(new StringReader('<dummy/>')),
+                new SAXResult(fop.defaultHandler))
+        }
     }
 }
 
