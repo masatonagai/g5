@@ -20,11 +20,18 @@ import groovy.xml.MarkupBuilder
 
 class SlideProxy {
    
-    private File xsl 
-    private MarkupBuilder xslBuilder
-    private Node node
-    private Closure closure
-    
+    File xsl 
+    MarkupBuilder xslBuilder
+    Node node
+    Closure closure
+    SlideAttributes attrs = new SlideAttributes()
+    boolean layouted
+    int size
+   
+    def propertyMissing(String name) {
+        attrs.@"$name"
+    } 
+   
     def call() {
         def xsl = File.createTempFile('.g5', '')
         xsl.deleteOnExit()
@@ -43,30 +50,43 @@ class SlideProxy {
                     'xsl:template'(match: '/') {
                         def defaultRootAttrs = ['font-size':'32pt']
                         'fo:root' defaultRootAttrs + node.attributes(), {
-                            'fo:layout-master-set' {
-                                'fo:simple-page-master' 'master-name': 'slide',
-                                    'page-height': '29.7cm',
-                                    'page-width': '21.0cm',
-                                    'margin': '2cm', {
-                                    'fo:region-body'()
-                                }
-                            }
-                            'fo:page-sequence'('master-reference': 'slide') {
-                                'fo:flow'('flow-name': 'xsl-region-body') {
-                                    closure()    
-                                }
-                            }
+                            closure()
                         }
                     }
                 }
         }
         return new Slide(xsl)
     }
-
+    
+    def layout() {
+        xslBuilder.'fo:layout-master-set' {
+            'fo:simple-page-master' PA4 +
+                node.attributes() + ['master-name':'slide'], {
+                    'fo:region-body'()
+            }
+        }    
+        layouted = true
+    }
+    
     def slide() {
-        xslBuilder.'fo:block'(node.attributes() + ['break-before': 'page']) {
-            closure()
+        def run = {
+            xslBuilder.'fo:block'(node.attributes() + ['break-before': 'page']) {
+                closure()
+            }
         }
+        if (!size) {
+            if (!layouted) {
+                layout()    
+            }
+            xslBuilder.'fo:page-sequence' 'master-reference': 'slide', {
+                'fo:flow'('flow-name': 'xsl-region-body') {
+                    run()
+                }
+            }
+        } else {
+            run()
+        }
+        size++
     }
     
     def block() {

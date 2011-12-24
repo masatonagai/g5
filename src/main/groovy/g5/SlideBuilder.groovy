@@ -40,8 +40,12 @@ class SlideBuilder {
         tr: 'tableRow',
         td: 'tableCell',
     ]
+   
+    def propertyMissing(String name) {
+        proxy."$name"    
+    }
     
-    def invokeMethod(String name, args) {
+    def methodMissing(String name, args) {
         name = alias[name] ?: name
         def closure = DO_NOTHING
         def attributes = Collections.emptyMap()
@@ -58,6 +62,7 @@ class SlideBuilder {
         try {
             proxy.node = new Node(parentNode, name, attributes, value)
             if (null != closure) {
+                closure.resolveStrategy = Closure.DELEGATE_FIRST
                 closure.delegate = this
             }
             proxy.closure = closure

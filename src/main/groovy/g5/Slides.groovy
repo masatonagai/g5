@@ -21,10 +21,14 @@ import javax.xml.transform.stream.StreamSource
 
 import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
+import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
 
 class Slide {
     
-    private File xsl
+    static Log logger = LogFactory.getLog(Slide.class)
+    
+    File xsl
     
     Slide(File xsl) {
         this.xsl = xsl    
@@ -58,10 +62,15 @@ class Slide {
         def foUA = fopFactory.newFOUserAgent()
         def fop = fopFactory.newFop(mime, foUA, out)
         xsl.withReader { r ->
+            try {
             TransformerFactory.newInstance()
                 .newTransformer(new StreamSource(r))
                 .transform(new StreamSource(new StringReader('<dummy/>')),
                 new SAXResult(fop.defaultHandler))
+            } catch (e) {
+                logger.fatal(xsl.text)
+                throw e
+            }
         }
     }
 }
